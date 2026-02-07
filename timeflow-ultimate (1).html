@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeFlow - Ultimate Timer & Productivity App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f7f9fc;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --text-light: #a0aec0;
+            --accent-primary: #667eea;
+            --accent-secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --glow: 0 0 30px rgba(102, 126, 234, 0.6);
+        }
+
+        body.dark {
+            --bg-primary: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            --bg-secondary: #2d3748;
+            --bg-tertiary: #1a202c;
+            --text-primary: #f7fafc;
+            --text-secondary: #cbd5e0;
+            --text-light: #718096;
+            --border: #4a5568;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow);
+            border-color: var(--accent-primary);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 150px;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-primary);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Daily Thought */
+        .daily-thought {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-lg);
+            color: white;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .daily-thought::before {
+            content: '💡';
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .daily-thought::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Mode Switcher */
+        .mode-switcher {
+            display: flex;
+            background: var(--bg-secondary);
+            padding: 5px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            box-shadow: var(--glow);
+        }
+
+        /* Main Timer Card */
+        .timer-card {
+            background: var(--bg-secondary);
+            border-radius: 30px;
+            padding: 60px 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        /* Circular Progress */
+        .circular-container {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            margin: 0 auto 40px;
+        }
+
+        .circular-progress {
+            transform: rotate(-90deg);
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: var(--bg-tertiary);
+            stroke-width: 15;
+        }
+
+        .circle-progress {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 15;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s linear;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+
+        .time-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+
+        .time-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .time-display.running {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .milliseconds {
+            font-size: 0.5em;
+            opacity: 0.7;
+        }
+
+        .mode-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Timer Inputs */
+        .timer-inputs {
+            display: none;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .timer-inputs.show {
+            display: flex;
+        }
+
+        .input-group {
+            text-align: center;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .time-input {
+            width: 90px;
+            padding: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            background: var(--bg-tertiary);
+            border: 3px solid var(--border);
+            border-radius: 15px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #38a169);
+            color: white;
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(72, 187, 120, 0.6);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #e53e3e);
+            color: white;
+            box-shadow: 0 8px 20px rgba(245, 101, 101, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(245, 101, 101, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 3px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            transform: translateY(-3px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Pomodoro Controls */
+        .pomodoro-controls {
+            display: none;
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pomodoro-controls.show {
+            display: block;
+        }
+
+        .pomodoro-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+
+        .pomodoro-stat {
+            text-align: center;
+        }
+
+        .pomodoro-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .pomodoro-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Laps */
+        .laps-container {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .laps-container.show {
+            display: block;
+        }
+
+        .laps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .laps-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .laps-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .small-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn {
+            background: var(--info);
+            color: white;
+        }
+
+        .clear-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .laps-list {
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lap-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            animation: slideInLeft 0.4s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .lap-number {
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .lap-time {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        /* Achievements */
+        .achievements {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .achievements-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .badge.unlocked {
+            border-color: var(--accent-primary);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            filter: grayscale(100%);
+        }
+
+        .badge.unlocked .badge-icon {
+            filter: grayscale(0%);
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .badge-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Completion Modal */
+        .completion-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .completion-modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .completion-content {
+            background: var(--bg-secondary);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 500px;
+            animation: zoomIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .completion-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: rotateIn 0.8s ease;
+        }
+
+        @keyframes rotateIn {
+            from {
+                transform: rotate(-360deg);
+                opacity: 0;
+            }
+            to {
+                transform: rotate(0);
+                opacity: 1;
+            }
+        }
+
+        .completion-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .completion-message {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-primary);
+            position: fixed;
+            animation: confetti-fall 3s linear;
+            z-index: 999;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .circular-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .timer-card {
+                padding: 40px 20px;
+            }
+
+            .time-display {
+                font-size: 2.5rem;
+            }
+
+            .time-input {
+                width: 75px;
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 15px 30px;
+                font-size: 1rem;
+                min-width: 120px;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">⏱️ TIMEFLOW</div>
+            <div class="header-actions">
+                <button class="icon-btn" id="soundBtn" title="Sound On/Off">🔊</button>
+                <button class="icon-btn" id="notifBtn" title="Enable Notifications">🔔</button>
+                <button class="icon-btn" id="themeBtn" title="Toggle Theme">🌙</button>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="streakValue">0</div>
+                <div class="stat-label">🔥 Day Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalSessions">0</div>
+                <div class="stat-label">📊 Total Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalTime">0h</div>
+                <div class="stat-label">⏱️ Total Time</div>
+            </div>
+        </div>
+
+        <!-- Daily Thought -->
+        <div class="daily-thought" id="dailyThought">
+            Loading inspiration...
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="mode-switcher">
+            <button class="mode-btn active" data-mode="stopwatch">⏱️ Stopwatch</button>
+            <button class="mode-btn" data-mode="timer">⏲️ Timer</button>
+            <button class="mode-btn" data-mode="pomodoro">🍅 Pomodoro</button>
+        </div>
+
+        <!-- Main Timer Card -->
+        <div class="timer-card">
+            <!-- Timer Inputs -->
+            <div class="timer-inputs" id="timerInputs">
+                <div class="input-group">
+                    <label class="input-label">Hours</label>
+                    <input type="number" class="time-input" id="hours" min="0" max="23" value="0">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Minutes</label>
+                    <input type="number" class="time-input" id="minutes" min="0" max="59" value="5">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Seconds</label>
+                    <input type="number" class="time-input" id="seconds" min="0" max="59" value="0">
+                </div>
+            </div>
+
+            <!-- Pomodoro Controls -->
+            <div class="pomodoro-controls" id="pomodoroControls">
+                <div class="pomodoro-info">
+                    <div class="pomodoro-stat">
+                        <div class="pomodoro-stat-value" id="pomodoroRound">1</div>
+                        <div class="pomodoro-stat-label">Round</div>
+                    </div>
+                    <div class="pomodoro-stat">
+                        <div class="pomodoro-stat-value" id="pomodoroPhase">Focus</div>
+                        <div class="pomodoro-stat-label">Phase</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Circular Progress -->
+            <div class="circular-container">
+                <svg class="circular-progress" width="350" height="350" viewBox="0 0 350 350">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="circle-bg" cx="175" cy="175" r="160"></circle>
+                    <circle class="circle-progress" id="circleProgress" cx="175" cy="175" r="160" 
+                            stroke-dasharray="1005" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="time-center">
+                    <div class="time-display" id="timeDisplay">00:00:00</div>
+                    <div class="mode-label" id="modeLabel">Stopwatch</div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-success" id="startBtn">Start</button>
+                <button class="btn btn-secondary" id="lapBtn" disabled>Lap</button>
+                <button class="btn btn-danger" id="resetBtn">Reset</button>
+            </div>
+        </div>
+
+        <!-- Laps Container -->
+        <div class="laps-container" id="lapsContainer">
+            <div class="laps-header">
+                <h3 class="laps-title">Lap Times</h3>
+                <div class="laps-actions">
+                    <button class="small-btn export-btn" id="exportBtn">📥 Export</button>
+                    <button class="small-btn clear-btn" id="clearLapsBtn">🗑️ Clear</button>
+                </div>
+            </div>
+            <div class="laps-list" id="lapsList"></div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="achievements">
+            <h3 class="achievements-title">🏆 Achievements</h3>
+            <div class="badges-grid" id="badgesGrid"></div>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div class="completion-modal" id="completionModal">
+        <div class="completion-content">
+            <div class="completion-icon">🎉</div>
+            <h2 class="completion-title">Time's Up!</h2>
+            <p class="completion-message">Great job! You've completed your session.</p>
+            <button class="btn btn-primary" onclick="closeCompletionModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
+        let currentMode = 'stopwatch';
+        let isRunning = false;
+        let isPaused = false;
+        let interval = null;
+        let time = 0; // in seconds
+        let totalTime = 0; // for timer countdown
+        let lapCounter = 0;
+        let laps = [];
+        let soundEnabled = true;
+        let notificationsEnabled = false;
+
+        // Pomodoro state
+        let pomodoroRound = 1;
+        let pomodoroPhase = 'focus'; // 'focus' or 'break'
+        let pomodoroFocusTime = 25 * 60; // 25 minutes
+        let pomodoroBreakTime = 5 * 60; // 5 minutes
+
+        // Stats
+        let stats = {
+            streak: 0,
+            totalSessions: 0,
+            totalTime: 0,
+            lastActiveDate: null
+        };
+
+        // Achievements
+        const achievements = [
+            { id: 'first-timer', name: 'First Timer', icon: '🎯', unlocked: false, condition: () => stats.totalSessions >= 1 },
+            { id: 'consistent', name: '3 Day Streak', icon: '🔥', unlocked: false, condition: () => stats.streak >= 3 },
+            { id: 'dedicated', name: '7 Day Streak', icon: '💪', unlocked: false, condition: () => stats.streak >= 7 },
+            { id: 'marathon', name: '10 Sessions', icon: '🏃', unlocked: false, condition: () => stats.totalSessions >= 10 },
+            { id: 'veteran', name: '50 Sessions', icon: '⭐', unlocked: false, condition: () => stats.totalSessions >= 50 },
+            { id: 'time-master', name: '10 Hours', icon: '👑', unlocked: false, condition: () => stats.totalTime >= 36000 }
+        ];
+
+        // Daily thoughts
+        const thoughts = [
+            "Believe in yourself! 💪",
+            "Every second counts ⏳",
+            "Keep pushing forward 🚀",
+            "Small steps lead to big results 🌱",
+            "Discipline is the bridge between goals and achievement 🏆",
+            "Stay positive, work hard, make it happen ✨",
+            "You are stronger than you think 💥",
+            "Focus on progress, not perfection 🔥",
+            "Consistency is key 🔑",
+            "Your future is created by what you do today, not tomorrow 🌞",
+            "Success is the sum of small efforts repeated day in and day out 💎",
+            "Don't watch the clock; do what it does. Keep going ⏰"
+        ];
+
+        // ============================================
+        // DOM ELEMENTS
+        // ============================================
+        const timeDisplay = document.getElementById('timeDisplay');
+        const modeLabel = document.getElementById('modeLabel');
+        const startBtn = document.getElementById('startBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const circleProgress = document.getElementById('circleProgress');
+        const timerInputs = document.getElementById('timerInputs');
+        const pomodoroControls = document.getElementById('pomodoroControls');
+        const lapsContainer = document.getElementById('lapsContainer');
+        const lapsList = document.getElementById('lapsList');
+        const completionModal = document.getElementById('completionModal');
+        const soundBtn = document.getElementById('soundBtn');
+        const notifBtn = document.getElementById('notifBtn');
+        const themeBtn = document.getElementById('themeBtn');
+        const dailyThought = document.getElementById('dailyThought');
+        const hoursInput = document.getElementById('hours');
+        const minutesInput = document.getElementById('minutes');
+        const secondsInput = document.getElementById('seconds');
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            loadStats();
+            loadTheme();
+            loadDailyThought();
+            updateStatsDisplay();
+            renderAchievements();
+            checkStreak();
+            setupEventListeners();
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        function setupEventListeners() {
+            // Mode buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+            });
+
+            // Control buttons
+            startBtn.addEventListener('click', toggleTimer);
+            lapBtn.addEventListener('click', addLap);
+            resetBtn.addEventListener('click', resetTimer);
+            document.getElementById('clearLapsBtn').addEventListener('click', clearLaps);
+            document.getElementById('exportBtn').addEventListener('click', exportLaps);
+
+            // Settings buttons
+            soundBtn.addEventListener('click', toggleSound);
+            notifBtn.addEventListener('click', toggleNotifications);
+            themeBtn.addEventListener('click', toggleTheme);
+
+            // Timer inputs
+            [hoursInput, minutesInput, secondsInput].forEach(input => {
+                input.addEventListener('input', updateTimerDisplay);
+            });
+        }
+
+        // ============================================
+        // MODE SWITCHING
+        // ============================================
+        function switchMode(mode) {
+            if (isRunning) {
+                if (!confirm('Switching modes will reset the current timer. Continue?')) return;
+                resetTimer();
+            }
+
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+
+            // Reset display
+            time = 0;
+            totalTime = 0;
+            updateDisplay();
+
+            // Show/hide controls based on mode
+            if (mode === 'stopwatch') {
+                modeLabel.textContent = 'Stopwatch';
+                timerInputs.classList.remove('show');
+                pomodoroControls.classList.remove('show');
+                lapBtn.style.display = 'inline-block';
+                timeDisplay.innerHTML = '00:00:00<span class="milliseconds">.00</span>';
+            } else if (mode === 'timer') {
+                modeLabel.textContent = 'Timer';
+                timerInputs.classList.add('show');
+                pomodoroControls.classList.remove('show');
+                lapBtn.style.display = 'none';
+                lapsContainer.classList.remove('show');
+                updateTimerDisplay();
+            } else if (mode === 'pomodoro') {
+                modeLabel.textContent = 'Pomodoro';
+                timerInputs.classList.remove('show');
+                pomodoroControls.classList.add('show');
+                lapBtn.style.display = 'none';
+                lapsContainer.classList.remove('show');
+                startPomodoro();
+            }
+
+            updateProgress(100);
+        }
+
+        // ============================================
+        // TIMER FUNCTIONS
+        // ============================================
+        function toggleTimer() {
+            if (!isRunning) {
+                startTimer();
+            } else {
+                pauseTimer();
+            }
+        }
+
+        function startTimer() {
+            // Initialize time based on mode
+            if (currentMode === 'timer' && time === 0) {
+                const h = parseInt(hoursInput.value) || 0;
+                const m = parseInt(minutesInput.value) || 0;
+                const s = parseInt(secondsInput.value) || 0;
+                totalTime = h * 3600 + m * 60 + s;
+                time = totalTime;
+
+                if (time <= 0) {
+                    alert('Please set a valid time!');
+                    return;
+                }
+
+                hoursInput.disabled = true;
+                minutesInput.disabled = true;
+                secondsInput.disabled = true;
+            }
+
+            if (currentMode === 'pomodoro' && time === 0) {
+                time = pomodoroPhase === 'focus' ? pomodoroFocusTime : pomodoroBreakTime;
+                totalTime = time;
+            }
+
+            isRunning = true;
+            isPaused = false;
+            startBtn.textContent = 'Pause';
+            startBtn.className = 'btn btn-primary';
+            lapBtn.disabled = false;
+            timeDisplay.classList.add('running');
+
+            const startTime = Date.now();
+            const startValue = time;
+
+            interval = setInterval(() => {
+                if (currentMode === 'stopwatch') {
+                    const elapsed = Math.floor((Date.now() - startTime) / 10) / 100; // Include milliseconds
+                    time = startValue + elapsed;
+                } else {
+                    time--;
+                    if (time <= 0) {
+                        finishTimer();
+                        return;
+                    }
+                }
+                updateDisplay();
+                if (currentMode !== 'stopwatch') updateProgress();
+            }, currentMode === 'stopwatch' ? 10 : 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            isPaused = true;
+            clearInterval(interval);
+            startBtn.textContent = 'Resume';
+            startBtn.className = 'btn btn-success';
+            timeDisplay.classList.remove('running');
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            isRunning = false;
+            isPaused = false;
+            time = 0;
+            totalTime = 0;
+            startBtn.textContent = 'Start';
+            startBtn.className = 'btn btn-success';
+            lapBtn.disabled = true;
+            timeDisplay.classList.remove('running');
+
+            if (currentMode === 'timer') {
+                hoursInput.disabled = false;
+                minutesInput.disabled = false;
+                secondsInput.disabled = false;
+                updateTimerDisplay();
+            } else if (currentMode === 'pomodoro') {
+                pomodoroRound = 1;
+                pomodoroPhase = 'focus';
+                document.getElementById('pomodoroRound').textContent = pomodoroRound;
+                document.getElementById('pomodoroPhase').textContent = 'Focus';
+                time = pomodoroFocusTime;
+                totalTime = time;
+            }
+
+            updateDisplay();
+            updateProgress(100);
+        }
+
+        function finishTimer() {
+            clearInterval(interval);
+            isRunning = false;
+            
+            // Update stats
+            stats.totalSessions++;
+            stats.totalTime += totalTime;
+            saveStats();
+            updateStatsDisplay();
+            checkAchievements();
+
+            // Play sound
+            if (soundEnabled) playCompletionSound();
+
+            // Show notification
+            if (notificationsEnabled) {
+                showNotification('Timer Complete!', 'Your session has ended.');
+            }
+
+            // Show completion modal with confetti
+            showCompletionModal();
+            createConfetti();
+
+            // Handle Pomodoro cycles
+            if (currentMode === 'pomodoro') {
+                if (pomodoroPhase === 'focus') {
+                    pomodoroPhase = 'break';
+                    document.getElementById('pomodoroPhase').textContent = 'Break';
+                } else {
+                    pomodoroPhase = 'focus';
+                    pomodoroRound++;
+                    document.getElementById('pomodoroRound').textContent = pomodoroRound;
+                    document.getElementById('pomodoroPhase').textContent = 'Focus';
+                }
+            }
+
+            // Reset for next session
+            if (currentMode === 'timer') {
+                hoursInput.disabled = false;
+                minutesInput.disabled = false;
+                secondsInput.disabled = false;
+            }
+
+            startBtn.textContent = 'Start';
+            startBtn.className = 'btn btn-success';
+            lapBtn.disabled = true;
+            timeDisplay.classList.remove('running');
+        }
+
+        function startPomodoro() {
+            pomodoroRound = 1;
+            pomodoroPhase = 'focus';
+            time = pomodoroFocusTime;
+            totalTime = time;
+            document.getElementById('pomodoroRound').textContent = pomodoroRound;
+            document.getElementById('pomodoroPhase').textContent = 'Focus';
+            updateDisplay();
+        }
+
+        // ============================================
+        // DISPLAY UPDATES
+        // ============================================
+        function updateDisplay() {
+            if (currentMode === 'stopwatch') {
+                const hours = Math.floor(time / 3600);
+                const minutes = Math.floor((time % 3600) / 60);
+                const seconds = Math.floor(time % 60);
+                const ms = Math.floor((time % 1) * 100);
+                timeDisplay.innerHTML = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}<span class="milliseconds">.${pad(ms)}</span>`;
+            } else {
+                const hours = Math.floor(time / 3600);
+                const minutes = Math.floor((time % 3600) / 60);
+                const seconds = Math.floor(time % 60);
+                timeDisplay.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            }
+        }
+
+        function updateTimerDisplay() {
+            if (!isRunning && currentMode === 'timer') {
+                const h = parseInt(hoursInput.value) || 0;
+                const m = parseInt(minutesInput.value) || 0;
+                const s = parseInt(secondsInput.value) || 0;
+                const total = h * 3600 + m * 60 + s;
+                const hours = Math.floor(total / 3600);
+                const minutes = Math.floor((total % 3600) / 60);
+                const seconds = total % 60;
+                timeDisplay.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            }
+        }
+
+        function updateProgress(percentage) {
+            if (currentMode === 'stopwatch') {
+                // Animate progress in 60-second cycles
+                const progressPercentage = ((time % 60) / 60) * 100;
+                const offset = 1005 - (1005 * progressPercentage / 100);
+                circleProgress.style.strokeDashoffset = offset;
+            } else {
+                const progressPercentage = percentage !== undefined ? percentage : (time / totalTime) * 100;
+                const offset = 1005 - (1005 * progressPercentage / 100);
+                circleProgress.style.strokeDashoffset = offset;
+            }
+        }
+
+        function pad(num) {
+            return String(Math.floor(num)).padStart(2, '0');
+        }
+
+        // ============================================
+        // LAP FUNCTIONS
+        // ============================================
+        function addLap() {
+            if (!isRunning || currentMode !== 'stopwatch') return;
+
+            lapCounter++;
+            const lapTime = time;
+            laps.unshift({ number: lapCounter, time: lapTime });
+
+            const lapItem = document.createElement('div');
+            lapItem.className = 'lap-item';
+            
+            const hours = Math.floor(lapTime / 3600);
+            const minutes = Math.floor((lapTime % 3600) / 60);
+            const seconds = Math.floor(lapTime % 60);
+            const ms = Math.floor((lapTime % 1) * 100);
+
+            lapItem.innerHTML = `
+                <span class="lap-number">Lap ${lapCounter}</span>
+                <span class="lap-time">${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(ms)}</span>
+            `;
+
+            lapsList.insertBefore(lapItem, lapsList.firstChild);
+            lapsContainer.classList.add('show');
+        }
+
+        function clearLaps() {
+            laps = [];
+            lapCounter = 0;
+            lapsList.innerHTML = '';
+            lapsContainer.classList.remove('show');
+        }
+
+        function exportLaps() {
+            if (laps.length === 0) {
+                alert('No laps to export!');
+                return;
+            }
+
+            let csv = 'Lap Number,Time\n';
+            laps.reverse().forEach(lap => {
+                const hours = Math.floor(lap.time / 3600);
+                const minutes = Math.floor((lap.time % 3600) / 60);
+                const seconds = Math.floor(lap.time % 60);
+                const ms = Math.floor((lap.time % 1) * 100);
+                csv += `${lap.number},${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(ms)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `laps_${new Date().toISOString()}.csv`;
+            a.click();
+        }
+
+        // ============================================
+        // STATS & ACHIEVEMENTS
+        // ============================================
+        function loadStats() {
+            const saved = localStorage.getItem('timeflow_stats');
+            if (saved) {
+                stats = JSON.parse(saved);
+            }
+
+            const savedAchievements = localStorage.getItem('timeflow_achievements');
+            if (savedAchievements) {
+                const unlocked = JSON.parse(savedAchievements);
+                achievements.forEach(a => {
+                    if (unlocked.includes(a.id)) a.unlocked = true;
+                });
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('timeflow_stats', JSON.stringify(stats));
+            
+            const unlockedIds = achievements.filter(a => a.unlocked).map(a => a.id);
+            localStorage.setItem('timeflow_achievements', JSON.stringify(unlockedIds));
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('streakValue').textContent = stats.streak;
+            document.getElementById('totalSessions').textContent = stats.totalSessions;
+            document.getElementById('totalTime').textContent = Math.floor(stats.totalTime / 3600) + 'h';
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            const lastActive = stats.lastActiveDate;
+
+            if (lastActive !== today) {
+                const yesterday = new Date(Date.now() - 86400000).toDateString();
+                if (lastActive === yesterday) {
+                    stats.streak++;
+                } else if (lastActive) {
+                    stats.streak = 1;
+                } else {
+                    stats.streak = 1;
+                }
+                stats.lastActiveDate = today;
+                saveStats();
+                updateStatsDisplay();
+            }
+        }
+
+        function checkAchievements() {
+            achievements.forEach(achievement => {
+                if (!achievement.unlocked && achievement.condition()) {
+                    achievement.unlocked = true;
+                    showAchievementUnlock(achievement);
+                }
+            });
+            saveStats();
+            renderAchievements();
+        }
+
+        function renderAchievements() {
+            const grid = document.getElementById('badgesGrid');
+            grid.innerHTML = '';
+            
+            achievements.forEach(achievement => {
+                const badge = document.createElement('div');
+                badge.className = 'badge' + (achievement.unlocked ? ' unlocked' : '');
+                badge.innerHTML = `
+                    <div class="badge-icon">${achievement.icon}</div>
+                    <div class="badge-name">${achievement.name}</div>
+                `;
+                grid.appendChild(badge);
+            });
+        }
+
+        function showAchievementUnlock(achievement) {
+            // Simple alert for now - could be enhanced with a toast notification
+            setTimeout(() => {
+                alert(`🎉 Achievement Unlocked: ${achievement.name} ${achievement.icon}`);
+            }, 1000);
+        }
+
+        // ============================================
+        // COMPLETION MODAL & CONFETTI
+        // ============================================
+        function showCompletionModal() {
+            completionModal.classList.add('show');
+        }
+
+        function closeCompletionModal() {
+            completionModal.classList.remove('show');
+        }
+
+        function createConfetti() {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        // ============================================
+        // SOUND & NOTIFICATIONS
+        // ============================================
+        function playCompletionSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const frequencies = [523.25, 659.25, 783.99];
+            
+            frequencies.forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = freq;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.5);
+                }, i * 200);
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function toggleNotifications() {
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    notificationsEnabled = !notificationsEnabled;
+                    notifBtn.textContent = notificationsEnabled ? '🔔' : '🔕';
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            notificationsEnabled = true;
+                            notifBtn.textContent = '🔔';
+                        }
+                    });
+                }
+            }
+        }
+
+        function showNotification(title, body) {
+            if (notificationsEnabled && Notification.permission === 'granted') {
+                new Notification(title, { body, icon: '⏰' });
+            }
+        }
+
+        // ============================================
+        // THEME
+        // ============================================
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            themeBtn.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('timeflow_theme', isDark ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('timeflow_theme');
+            if (saved === 'dark') {
+                document.body.classList.add('dark');
+                themeBtn.textContent = '☀️';
+            }
+        }
+
+        // ============================================
+        // DAILY THOUGHT
+        // ============================================
+        function loadDailyThought() {
+            const today = new Date().toDateString();
+            const saved = localStorage.getItem('timeflow_thought_date');
+            let index;
+
+            if (saved === today) {
+                index = parseInt(localStorage.getItem('timeflow_thought_index')) || 0;
+            } else {
+                index = new Date().getDate() % thoughts.length;
+                localStorage.setItem('timeflow_thought_date', today);
+                localStorage.setItem('timeflow_thought_index', index);
+            }
+
+            dailyThought.textContent = thoughts[index];
+        }
+
+        // ============================================
+        // INITIALIZE APP
+        // ============================================
+        init();
+    </script>
+</body>
+</html>
